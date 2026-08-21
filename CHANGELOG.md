@@ -8,8 +8,8 @@
 
 - 建立 CHANGELOG 记录文档。
 - 建立 README 规则文档和本变更记录规范。
+- 新增 GitHub Pull Request 模板，统一记录变更影响、验证方式和合并前检查。
 
 ### Changed
 
 ### Fixed
-
