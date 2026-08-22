@@ -3,7 +3,20 @@
 用英语学习积分照顾宠物的自律养成工作台。学习不是可选奖励，而是宠物健康、成长与生活资源的唯一来源。
 
 > 规则版本：v0.1（2026-08-21）  
-> 当前状态：规则已冻结，宠物玩法尚未开始开发。
+> 当前状态：规则已冻结；M0 技术骨架已建立，宠物玩法尚未开始开发。
+
+## 技术基线
+
+- 小程序前端：Taro + React + TypeScript；H5 仅用于浏览器回归验证。
+- 服务端：FastAPI + Python，是积分、库存、宠物状态、死亡判定和排行榜的唯一规则权威。
+- 数据：PostgreSQL + SQLAlchemy；M1 起引入 Redis 处理缓存、限流与幂等协调。
+- 测试：Vitest + Testing Library（前端单元测试）、Pytest（服务端测试）、Playwright（H5 冒烟测试）；微信平台能力以开发者工具/真机补充验证。
+- 架构和本地运行说明见 [docs/architecture.md](docs/architecture.md)。
+
+## 品牌与视觉
+
+- 中文产品名：**英语养宠计划**；英文产品名：**English Pet Care Plan**。
+- 图标为“宠物面孔 + 打开的学习书本”，表达学习与照料的关联；完整使用规则与域名确认流程见 [docs/brand.md](docs/brand.md)。
 
 ## 核心循环
 

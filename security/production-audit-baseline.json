@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-08-22",
+  "source": "npm audit --omit=dev --json",
+  "maximum": {
+    "critical": 6,
+    "high": 2,
+    "moderate": 11,
+    "total": 19
+  },
+  "releaseMaximum": {
+    "critical": 0,
+    "high": 0
+  }
+}

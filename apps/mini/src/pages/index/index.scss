@@ -1,0 +1,178 @@
+@use '../../styles/tokens' as tokens;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-5;
+  min-height: 100vh;
+  padding: 64px 40px;
+}
+
+.brand-row {
+  align-items: center;
+  display: flex;
+  gap: tokens.$space-2;
+}
+
+.brand-mark {
+  height: 88px;
+  position: relative;
+  width: 88px;
+}
+
+.brand-ear {
+  background: tokens.$color-learning;
+  border-radius: 16px 16px 4px 4px;
+  height: 28px;
+  position: absolute;
+  top: 8px;
+  width: 28px;
+}
+
+.brand-ear-left {
+  left: 10px;
+  transform: rotate(-28deg);
+}
+
+.brand-ear-right {
+  right: 10px;
+  transform: rotate(28deg);
+}
+
+.brand-face {
+  align-items: center;
+  background: #f4b183;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  height: 68px;
+  justify-content: center;
+  left: 10px;
+  position: absolute;
+  top: 8px;
+  width: 68px;
+}
+
+.brand-eyes {
+  display: flex;
+  gap: 22px;
+}
+
+.brand-eye {
+  background: tokens.$color-ink;
+  border-radius: 50%;
+  height: 7px;
+  width: 7px;
+}
+
+.brand-smile {
+  border-bottom: 4px solid tokens.$color-ink;
+  border-radius: 0 0 18px 18px;
+  height: 10px;
+  margin-top: 6px;
+  width: 20px;
+}
+
+.brand-book {
+  bottom: 0;
+  display: flex;
+  gap: 3px;
+  left: 13px;
+  position: absolute;
+}
+
+.brand-book-page {
+  background: tokens.$color-learning;
+  height: 28px;
+  width: 28px;
+}
+
+.brand-book-page-left {
+  border-radius: 12px 5px 5px 4px;
+}
+
+.brand-book-page-right {
+  background: #e5682d;
+  border-radius: 5px 12px 4px 5px;
+}
+
+.brand-name {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.product-name {
+  color: tokens.$color-ink;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.product-name-en {
+  color: tokens.$color-muted;
+  font-size: 20px;
+  letter-spacing: 0.5px;
+}
+
+.hero-card {
+  background: tokens.$color-surface-raised;
+  border: 2px solid tokens.$color-border;
+  border-radius: tokens.$radius-card;
+  box-shadow: tokens.$shadow-raised;
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-3;
+  padding: 48px 40px;
+}
+
+.eyebrow {
+  color: tokens.$color-learning;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.title {
+  color: tokens.$color-ink;
+  font-size: 50px;
+  font-weight: 700;
+  line-height: 1.32;
+}
+
+.description {
+  color: tokens.$color-muted;
+  font-size: 28px;
+  line-height: 1.7;
+}
+
+.principle-list {
+  display: flex;
+  gap: tokens.$space-2;
+}
+
+.principle {
+  background: tokens.$color-learning-soft;
+  border-radius: 20px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px;
+}
+
+.principle-label {
+  color: tokens.$color-learning;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.principle-label-care {
+  color: tokens.$color-care;
+}
+
+.principle-text {
+  color: tokens.$color-ink;
+  font-size: 20px;
+  line-height: 1.45;
+}

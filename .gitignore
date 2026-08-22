@@ -1,0 +1,23 @@
+# JavaScript / Taro
+node_modules/
+dist/
+.taro/
+.swc/
+coverage/
+playwright-report/
+test-results/
+
+# Python / FastAPI
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+services/api/.venv/
+
+# Local configuration and operating-system files
+.env
+.env.*
+!.env.example
+.DS_Store
