@@ -22,7 +22,7 @@ audit-release:
 	npm run audit:prod:release
 
 api-install:
-	@python3 -c "import sys; raise SystemExit('Python 3.11+ is required; found ' + sys.version.split()[0]) if sys.version_info < (3, 11) else None"
+	@python3 -c "import sys; sys.exit('Python 3.11+ is required; found ' + sys.version.split()[0]) if sys.version_info < (3, 11) else None"
 	python3 -m venv $(API_DIR)/.venv
 	$(API_PYTHON) -m pip install --upgrade pip
 	$(API_PYTHON) -m pip install -e "$(API_DIR)[dev]"
