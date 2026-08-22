@@ -17,7 +17,8 @@ describe('IndexPage', () => {
   it('does not create a demonstration account before the login service is connected', () => {
     render(<IndexPage />)
 
-    expect(screen.getByRole('button', { name: '登录并领养 Momo' })).toBeDisabled()
+    expect(screen.getByTestId('welcome-adoption-action')).toBeDisabled()
+    expect(screen.getByTestId('welcome-adoption-action')).toHaveAttribute('aria-disabled', 'true')
     expect(screen.getByText('服务连接准备中，暂不创建演示账户或虚构记录。')).toBeInTheDocument()
   })
 })

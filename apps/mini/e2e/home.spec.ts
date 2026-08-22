@@ -11,5 +11,5 @@ test('shows the Beta welcome and reassurance boundaries without a demo account',
   ).toBeVisible()
   await expect(page.getByText('离开不会失去 Momo', { exact: true })).toBeVisible()
   await expect(page.getByText('基础互动始终免费', { exact: true })).toBeVisible()
-  await expect(page.getByRole('button', { name: '登录并领养 Momo' })).toBeDisabled()
+  await expect(page.getByTestId('welcome-adoption-action')).toHaveAttribute('aria-disabled', 'true')
 })

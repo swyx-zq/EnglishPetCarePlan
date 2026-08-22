@@ -104,8 +104,10 @@ export default function IndexPage() {
             登录与领养服务接入后，Momo 的名字、学习和陪伴记录才会安全地保存下来。
           </Text>
           <Button
+            aria-disabled="true"
             aria-describedby="welcome-login-description"
             className="welcome-primary-button"
+            data-testid="welcome-adoption-action"
             disabled
           >
             登录并领养 Momo
