@@ -1,0 +1,23 @@
+{
+  "name": "english-pet-care-plan",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:mini": "npm run dev --workspace @english-pet-care-plan/mini",
+    "dev:h5": "npm run dev:h5 --workspace @english-pet-care-plan/mini",
+    "build:mini": "npm run build --workspace @english-pet-care-plan/mini",
+    "build:h5": "npm run build:h5 --workspace @english-pet-care-plan/mini",
+    "lint": "npm run lint --workspace @english-pet-care-plan/mini",
+    "format:check": "npm run format:check --workspace @english-pet-care-plan/mini",
+    "typecheck": "npm run typecheck --workspace @english-pet-care-plan/mini",
+    "test:unit": "npm run test:unit --workspace @english-pet-care-plan/mini",
+    "test:ui": "npm run test:ui --workspace @english-pet-care-plan/mini",
+    "check:web": "npm run format:check && npm run lint && npm run typecheck && npm run test:unit && npm run build:mini",
+    "audit:prod:baseline": "node scripts/check-production-audit.mjs",
+    "audit:prod:release": "node scripts/check-production-audit.mjs --release",
+    "verify:upgrade": "npm run check:web && npm run build:h5 && npm run test:ui"
+  }
+}
