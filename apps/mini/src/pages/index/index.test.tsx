@@ -3,12 +3,21 @@ import { render, screen } from '@testing-library/react'
 import IndexPage from './index'
 
 describe('IndexPage', () => {
-  it('shows the confirmed bilingual product name and visual direction', () => {
+  it('explains the Beta reassurance boundaries before login and adoption are available', () => {
     render(<IndexPage />)
 
-    expect(screen.getByText('英语养宠计划')).toBeInTheDocument()
-    expect(screen.getByText('English Pet Care Plan')).toBeInTheDocument()
-    expect(screen.getByText('学一点英语，照顾好一个生命。')).toBeInTheDocument()
-    expect(screen.getByText('状态变化清晰可解释')).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: '欢迎，和 Momo 建立一段安心的陪伴。' }),
+    ).toBeInTheDocument()
+    expect(screen.getByText('离开不会失去 Momo')).toBeInTheDocument()
+    expect(screen.getByText('基础互动始终免费')).toBeInTheDocument()
+    expect(screen.getByText('陪伴声可以随时关闭')).toBeInTheDocument()
+  })
+
+  it('does not create a demonstration account before the login service is connected', () => {
+    render(<IndexPage />)
+
+    expect(screen.getByRole('button', { name: '登录并领养 Momo' })).toBeDisabled()
+    expect(screen.getByText('服务连接准备中，暂不创建演示账户或虚构记录。')).toBeInTheDocument()
   })
 })

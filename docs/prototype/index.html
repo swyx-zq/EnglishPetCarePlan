@@ -1,0 +1,1433 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="英语养宠计划交互原型：学习获得积分，与可恢复的虚拟宠物建立陪伴关系。"
+    />
+    <title>英语养宠计划｜交互原型</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #292524;
+        --muted: #78716c;
+        --surface: #fff7ed;
+        --raised: #ffffff;
+        --border: #e7d9c9;
+        --learning: #c2410c;
+        --learning-soft: #fff0e6;
+        --care: #257953;
+        --care-soft: #e8f5ed;
+        --warning: #b45309;
+        --warning-soft: #fff7df;
+        --danger: #b42318;
+        --danger-soft: #fff0ef;
+        --shadow: 0 12px 28px rgb(88 53 29 / 12%);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        background: linear-gradient(180deg, #fff7ed 0%, #fffdf9 100%);
+        color: var(--ink);
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        margin: 0;
+        min-width: 320px;
+      }
+
+      button {
+        font: inherit;
+      }
+
+      button:focus-visible,
+      a:focus-visible {
+        outline: 3px solid #2563eb;
+        outline-offset: 3px;
+      }
+
+      .prototype-note {
+        background: #3f2b1f;
+        color: #fff7ed;
+        font-size: 13px;
+        line-height: 1.45;
+        padding: 10px 18px;
+        text-align: center;
+      }
+
+      .app-shell {
+        background: var(--surface);
+        box-shadow: var(--shadow);
+        margin: 20px auto;
+        max-width: 430px;
+        min-height: 850px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .app-header {
+        align-items: center;
+        background: rgb(255 247 237 / 94%);
+        backdrop-filter: blur(10px);
+        display: flex;
+        justify-content: space-between;
+        padding: 18px 20px 12px;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+      }
+
+      .brand {
+        align-items: center;
+        display: flex;
+        gap: 10px;
+      }
+      .brand-mark {
+        align-items: center;
+        background: var(--learning);
+        border-radius: 13px;
+        color: white;
+        display: flex;
+        font-size: 21px;
+        font-weight: 700;
+        height: 38px;
+        justify-content: center;
+        width: 38px;
+      }
+      .brand-name {
+        display: grid;
+        gap: 1px;
+      }
+      .brand-name strong {
+        font-size: 16px;
+      }
+      .brand-name span {
+        color: var(--muted);
+        font-size: 11px;
+        letter-spacing: 0.2px;
+      }
+      .points {
+        align-items: center;
+        background: var(--raised);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        color: var(--learning);
+        display: flex;
+        font-size: 14px;
+        font-variant-numeric: tabular-nums;
+        font-weight: 700;
+        gap: 5px;
+        padding: 8px 11px;
+      }
+
+      main {
+        padding: 6px 20px 108px;
+      }
+      .screen {
+        display: none;
+      }
+      .screen.is-active {
+        display: block;
+      }
+      .screen-heading {
+        font-size: 25px;
+        letter-spacing: -0.4px;
+        margin: 16px 0 6px;
+      }
+      .screen-subtitle {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.5;
+        margin: 0 0 18px;
+      }
+      .card {
+        background: var(--raised);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        margin: 12px 0;
+        padding: 16px;
+      }
+      .section-label {
+        color: var(--muted);
+        display: block;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.8px;
+        margin: 22px 0 8px;
+      }
+      .eyebrow {
+        color: var(--learning);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1.2px;
+      }
+      .row {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .stack {
+        display: grid;
+        gap: 10px;
+      }
+      .muted {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      .status {
+        align-items: center;
+        display: inline-flex;
+        font-size: 12px;
+        font-weight: 700;
+        gap: 5px;
+      }
+      .status::before {
+        background: currentColor;
+        border-radius: 999px;
+        content: '';
+        height: 7px;
+        width: 7px;
+      }
+      .status-safe {
+        color: var(--care);
+      }
+      .status-warning {
+        color: var(--warning);
+      }
+      .status-danger {
+        color: var(--danger);
+      }
+
+      .pet-summary {
+        background: #fffdf9;
+        overflow: hidden;
+        padding: 0;
+      }
+      .pet-stage {
+        background: #c8b08c;
+        height: 360px;
+        overflow: hidden;
+        position: relative;
+      }
+      .pet-scene {
+        display: block;
+        height: 100%;
+        object-fit: cover;
+        object-position: center center;
+        transform: scale(1.015);
+        transition:
+          filter 0.8s ease,
+          opacity 0.7s ease;
+        width: 100%;
+      }
+      .pet-stage[data-species='dog'] .pet-scene {
+        object-position: center 58%;
+      }
+      .pet-stage.is-reacting .pet-scene {
+        animation: companion-stir 1.6s ease-in-out;
+        filter: brightness(1.06) saturate(1.05);
+      }
+      .pet-stage.is-resting .pet-scene {
+        animation: companion-breathe 8s ease-in-out infinite;
+      }
+      .pet-stage::after {
+        background: linear-gradient(180deg, rgb(34 23 13 / 2%) 10%, rgb(27 18 11 / 45%) 100%);
+        bottom: 0;
+        content: '';
+        inset: 0;
+        position: absolute;
+      }
+      .pet-preview-switcher {
+        display: flex;
+        gap: 6px;
+        left: 12px;
+        position: absolute;
+        top: 12px;
+        z-index: 2;
+      }
+      .pet-preview-button,
+      .sound-setting {
+        border: 1px solid rgb(255 255 255 / 42%);
+        border-radius: 999px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 700;
+        min-height: 32px;
+        padding: 6px 10px;
+      }
+      .pet-preview-button,
+      .sound-setting {
+        background: rgb(34 23 13 / 35%);
+        color: #fffdf9;
+      }
+      .pet-preview-button.is-selected,
+      .sound-setting[aria-pressed='true'] {
+        background: #fffdf9;
+        color: #6b3b1e;
+      }
+      .pet-speech {
+        bottom: 18px;
+        color: #fffdf9;
+        font-size: 12px;
+        left: 16px;
+        line-height: 1.35;
+        margin: 0;
+        max-width: 232px;
+        padding: 0;
+        position: absolute;
+        text-align: center;
+        text-align: left;
+        text-shadow: 0 1px 8px rgb(0 0 0 / 45%);
+        transition:
+          opacity 0.35s ease,
+          transform 0.35s ease;
+        z-index: 2;
+      }
+      .pet-stage.is-reacting .pet-speech {
+        transform: translateY(-5px);
+      }
+      .pet-presence {
+        align-items: center;
+        background: rgb(31 22 15 / 43%);
+        border: 1px solid rgb(255 255 255 / 24%);
+        border-radius: 999px;
+        color: #fffdf9;
+        display: inline-flex;
+        font-size: 11px;
+        gap: 6px;
+        padding: 6px 9px;
+        position: absolute;
+        right: 12px;
+        top: 12px;
+        z-index: 2;
+      }
+      .pet-presence::before {
+        background: #c6f0c9;
+        border-radius: 50%;
+        box-shadow: 0 0 0 0 rgb(198 240 201 / 60%);
+        content: '';
+        height: 6px;
+        width: 6px;
+      }
+      .pet-stage.is-reacting .pet-presence::before {
+        animation: presence-pulse 1.2s ease-out;
+      }
+      @keyframes companion-breathe {
+        0%,
+        100% {
+          transform: scale(1.015) translateY(0);
+        }
+        50% {
+          transform: scale(1.035) translateY(-3px);
+        }
+      }
+      @keyframes companion-stir {
+        0%,
+        100% {
+          transform: scale(1.015);
+        }
+        45% {
+          transform: scale(1.055) translateY(-5px);
+        }
+      }
+      @keyframes presence-pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgb(198 240 201 / 60%);
+        }
+        100% {
+          box-shadow: 0 0 0 8px rgb(198 240 201 / 0%);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .pet-stage.is-resting .pet-scene,
+        .pet-stage.is-reacting .pet-scene,
+        .pet-stage.is-reacting .pet-presence::before {
+          animation: none;
+        }
+      }
+      .pet-content {
+        padding: 16px;
+      }
+      .pet-name {
+        font-size: 22px;
+        margin: 0;
+      }
+      .pet-meta {
+        color: var(--muted);
+        font-size: 13px;
+        margin: 3px 0 13px;
+      }
+      .care-list {
+        border-top: 1px solid var(--border);
+        display: grid;
+        margin-top: 14px;
+      }
+      .care-line {
+        align-items: center;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        font-size: 13px;
+        justify-content: space-between;
+        padding: 11px 0;
+      }
+      .care-line:last-child {
+        border-bottom: 0;
+      }
+      .care-line time {
+        color: var(--warning);
+        font-variant-numeric: tabular-nums;
+        font-weight: 700;
+      }
+
+      .primary-button,
+      .secondary-button,
+      .text-button {
+        border: 0;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 700;
+        min-height: 43px;
+        padding: 10px 14px;
+      }
+      .primary-button {
+        background: var(--learning);
+        color: white;
+        width: 100%;
+      }
+      .primary-button:hover {
+        background: #9a3412;
+      }
+      .secondary-button {
+        background: var(--learning-soft);
+        color: var(--learning);
+      }
+      .text-button {
+        background: transparent;
+        color: var(--learning);
+        min-height: auto;
+        padding: 3px 0;
+        text-decoration: underline;
+      }
+      .primary-button:disabled,
+      .secondary-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+
+      .task-card {
+        align-items: center;
+        display: grid;
+        gap: 10px;
+        grid-template-columns: 46px 1fr auto;
+      }
+      .task-icon {
+        align-items: center;
+        background: var(--learning-soft);
+        border-radius: 14px;
+        display: flex;
+        font-size: 23px;
+        height: 46px;
+        justify-content: center;
+        width: 46px;
+      }
+      .task-title {
+        font-size: 15px;
+        font-weight: 800;
+        margin: 0;
+      }
+      .task-desc {
+        color: var(--muted);
+        font-size: 12px;
+        margin: 3px 0 0;
+      }
+      .task-points {
+        color: var(--learning);
+        font-size: 13px;
+        font-weight: 800;
+        text-align: right;
+      }
+      .task-limit {
+        color: var(--muted);
+        font-size: 11px;
+        text-align: right;
+      }
+
+      .mini-progress {
+        background: #f0ede8;
+        border-radius: 99px;
+        height: 8px;
+        overflow: hidden;
+      }
+      .mini-progress > span {
+        background: var(--care);
+        display: block;
+        height: 100%;
+        transition: width 0.3s ease;
+      }
+
+      .inventory {
+        display: grid;
+        gap: 8px;
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .inventory-item {
+        background: #fffaf5;
+        border: 1px solid var(--border);
+        border-radius: 13px;
+        padding: 11px 8px;
+        text-align: center;
+      }
+      .inventory-item b {
+        display: block;
+        font-size: 19px;
+        margin-top: 4px;
+      }
+      .inventory-item span {
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .care-action {
+        align-items: center;
+        display: grid;
+        gap: 10px;
+        grid-template-columns: 1fr auto;
+      }
+      .care-action h3 {
+        font-size: 15px;
+        margin: 0;
+      }
+      .care-action p {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+        margin: 4px 0 0;
+      }
+      .care-action .secondary-button {
+        min-width: 72px;
+      }
+      .timeline {
+        border-left: 2px solid var(--border);
+        margin: 10px 0 0 6px;
+        padding-left: 16px;
+      }
+      .timeline-item {
+        padding: 0 0 15px;
+        position: relative;
+      }
+      .timeline-item::before {
+        background: var(--care);
+        border: 3px solid var(--raised);
+        border-radius: 50%;
+        content: '';
+        height: 10px;
+        left: -23px;
+        position: absolute;
+        top: 4px;
+        width: 10px;
+      }
+      .timeline-item.warning::before {
+        background: var(--warning);
+      }
+      .timeline-item strong {
+        display: block;
+        font-size: 13px;
+      }
+      .timeline-item span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .shop-card {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: 46px 1fr auto;
+      }
+      .shop-icon {
+        align-items: center;
+        background: var(--care-soft);
+        border-radius: 13px;
+        display: flex;
+        font-size: 22px;
+        height: 46px;
+        justify-content: center;
+        width: 46px;
+      }
+      .shop-card h3 {
+        font-size: 15px;
+        margin: 0;
+      }
+      .shop-card p {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.35;
+        margin: 3px 0 0;
+      }
+      .shop-buy {
+        align-items: flex-end;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .shop-price {
+        color: var(--learning);
+        font-size: 13px;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+      .shop-buy .secondary-button {
+        font-size: 12px;
+        min-height: 35px;
+        padding: 6px 9px;
+      }
+
+      .profile-item {
+        align-items: center;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        padding: 14px 0;
+      }
+      .profile-item:last-child {
+        border: 0;
+      }
+      .profile-item strong {
+        font-size: 14px;
+      }
+      .profile-item span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .ledger-item {
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+      }
+      .ledger-item:last-child {
+        border: 0;
+      }
+      .ledger-item small {
+        color: var(--muted);
+        display: block;
+        margin-top: 4px;
+      }
+      .ledger-positive {
+        color: var(--care);
+        font-weight: 800;
+      }
+      .ledger-negative {
+        color: var(--learning);
+        font-weight: 800;
+      }
+
+      .bottom-nav {
+        background: rgb(255 255 255 / 96%);
+        border-top: 1px solid var(--border);
+        bottom: 0;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        left: 0;
+        padding: 8px 8px 13px;
+        position: absolute;
+        right: 0;
+      }
+      .nav-button {
+        background: transparent;
+        border: 0;
+        color: var(--muted);
+        cursor: pointer;
+        display: grid;
+        font-size: 11px;
+        gap: 3px;
+        justify-items: center;
+        padding: 4px;
+      }
+      .nav-button .nav-icon {
+        font-size: 19px;
+        line-height: 1;
+      }
+      .nav-button.is-active {
+        color: var(--learning);
+        font-weight: 800;
+      }
+
+      .modal-backdrop {
+        align-items: flex-end;
+        background: rgb(41 37 36 / 45%);
+        display: none;
+        inset: 0;
+        justify-content: center;
+        padding: 18px;
+        position: fixed;
+        z-index: 5;
+      }
+      .modal-backdrop.is-open {
+        display: flex;
+      }
+      .modal {
+        background: var(--raised);
+        border-radius: 22px;
+        max-width: 430px;
+        padding: 22px;
+        width: 100%;
+      }
+      .modal h2 {
+        font-size: 21px;
+        margin: 0 0 7px;
+      }
+      .modal p {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.55;
+        margin: 0 0 17px;
+      }
+      .word {
+        background: var(--learning-soft);
+        border-radius: 15px;
+        font-size: 30px;
+        font-weight: 800;
+        margin: 18px 0;
+        padding: 28px 15px;
+        text-align: center;
+      }
+      .answer-grid {
+        display: grid;
+        gap: 9px;
+        grid-template-columns: 1fr 1fr;
+      }
+      .answer-button {
+        background: var(--raised);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        color: var(--ink);
+        cursor: pointer;
+        font-size: 14px;
+        min-height: 44px;
+        padding: 8px;
+      }
+      .answer-button:hover {
+        border-color: var(--learning);
+        color: var(--learning);
+      }
+      .modal-footer {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 18px;
+      }
+
+      .toast {
+        background: #292524;
+        border-radius: 999px;
+        bottom: 95px;
+        color: white;
+        display: none;
+        font-size: 13px;
+        left: 50%;
+        max-width: calc(100% - 44px);
+        padding: 11px 16px;
+        position: absolute;
+        transform: translateX(-50%);
+        z-index: 4;
+      }
+      .toast.is-showing {
+        display: block;
+      }
+
+      @media (max-width: 470px) {
+        .prototype-note {
+          font-size: 12px;
+        }
+        .app-shell {
+          box-shadow: none;
+          margin: 0 auto;
+          min-height: 100vh;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="prototype-note" role="note">
+      交互原型 v0.2｜所有积分、权益和状态均为演示数据，不会保存或提交。
+    </div>
+    <div class="app-shell" aria-label="英语养宠计划交互原型">
+      <header class="app-header">
+        <div class="brand" aria-label="英语养宠计划">
+          <div class="brand-mark" aria-hidden="true">🐾</div>
+          <div class="brand-name">
+            <strong>英语养宠计划</strong><span>English Pet Care Plan</span>
+          </div>
+        </div>
+        <div class="points" aria-label="当前积分">
+          <span aria-hidden="true">✦</span><span id="points-value">68</span> 分
+        </div>
+      </header>
+
+      <main>
+        <section class="screen is-active" id="screen-home" aria-labelledby="home-title">
+          <p class="eyebrow">TODAY · 8 月 22 日</p>
+          <h1 class="screen-heading" id="home-title">早上好，小林。</h1>
+          <p class="screen-subtitle">完成一项小学习，让 Momo 见证你的进步；有空也回来陪陪它。</p>
+
+          <article class="card pet-summary" aria-label="Momo 的状态">
+            <div
+              class="pet-stage is-resting"
+              id="pet-stage"
+              data-species="cat"
+              aria-label="Momo 的治愈陪伴空间"
+            >
+              <div class="pet-preview-switcher" aria-label="选择宠物动画预览">
+                <button
+                  class="pet-preview-button is-selected"
+                  type="button"
+                  data-select-species="cat"
+                  aria-pressed="true"
+                >
+                  猫咪（Beta）
+                </button>
+                <button
+                  class="pet-preview-button"
+                  type="button"
+                  data-select-species="dog"
+                  aria-pressed="false"
+                >
+                  狗狗（概念）
+                </button>
+              </div>
+              <img
+                class="pet-scene"
+                id="pet-scene"
+                src="assets/momo-cat-room.jpg"
+                alt="英国短毛猫 Momo 在洒满阳光的房间里安静休息"
+              />
+              <div class="pet-presence" id="pet-presence">正在安静陪伴</div>
+              <p class="pet-speech" id="pet-speech" aria-live="polite">
+                Momo 在窗边晒太阳，偶尔抬头看看你。
+              </p>
+            </div>
+            <div class="pet-content">
+              <div class="row">
+                <h2 class="pet-name">Momo</h2>
+                <span class="status status-warning" id="home-status">轻轻提醒</span>
+              </div>
+              <p class="pet-meta">英国短毛猫 · 陪伴第 12 天</p>
+              <div class="care-list">
+                <div class="care-line">
+                  <span>🍚 一起吃点心</span><time id="home-food-time">有空陪陪它</time>
+                </div>
+                <div class="care-line">
+                  <span>💧 换一碗水</span><time id="home-water-time">随时可以</time>
+                </div>
+                <div class="care-line">
+                  <span>🧹 整理小窝</span><time id="home-litter-time">随时可以</time>
+                </div>
+              </div>
+              <div class="row" style="margin-top: 12px">
+                <span class="muted" id="sound-status">已开启：自然间隔的陪伴叫声</span>
+                <button class="sound-setting" id="sound-setting" type="button" aria-pressed="true">
+                  静音
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <span class="section-label">今日学习</span>
+          <article class="card">
+            <div class="row">
+              <div>
+                <strong>今日可得积分</strong>
+                <p class="muted">完成学习，解锁 Momo 的成长记忆。</p>
+              </div>
+              <strong id="today-earned">已得 0 / 24 分</strong>
+            </div>
+            <div class="mini-progress" aria-label="今日学习进度">
+              <span id="learning-progress" style="width: 0%"></span>
+            </div>
+            <div style="height: 12px"></div>
+            <button class="primary-button" type="button" data-open-learning>
+              开始背词，获得 8 分
+            </button>
+          </article>
+
+          <span class="section-label">下一步</span>
+          <article class="card row">
+            <div>
+              <strong>陪 Momo 一会儿</strong>
+              <p class="muted">基础互动免费；即使离开很久，也可以随时回来重逢。</p>
+            </div>
+            <button class="secondary-button" type="button" data-navigate="care">去陪伴</button>
+          </article>
+        </section>
+
+        <section class="screen" id="screen-learn" aria-labelledby="learn-title">
+          <h1 class="screen-heading" id="learn-title">学习</h1>
+          <p class="screen-subtitle">每次完成条件由服务端校验；原型只演示结果回执。</p>
+          <span class="section-label">选择一个任务</span>
+          <article class="card task-card">
+            <div class="task-icon">🗂️</div>
+            <div>
+              <h2 class="task-title">背单词</h2>
+              <p class="task-desc">10 词一组，正确率至少 80%</p>
+            </div>
+            <div>
+              <div class="task-points">+8 分</div>
+              <div class="task-limit" id="words-limit">今日 0 / 3</div>
+            </div>
+          </article>
+          <button class="primary-button" type="button" data-open-learning>开始一组背词</button>
+          <article class="card task-card">
+            <div class="task-icon">📖</div>
+            <div>
+              <h2 class="task-title">英语阅读</h2>
+              <p class="task-desc">完成文章阅读与理解题</p>
+            </div>
+            <div>
+              <div class="task-points">+20 分</div>
+              <div class="task-limit">今日 0 / 2</div>
+            </div>
+          </article>
+          <button
+            class="secondary-button"
+            type="button"
+            style="width: 100%"
+            data-show-toast="阅读将在首轮 Beta 验证学习—陪伴闭环后开放"
+          >
+            查看阅读任务
+          </button>
+          <article class="card task-card">
+            <div class="task-icon">🎙️</div>
+            <div>
+              <h2 class="task-title">口语练习</h2>
+              <p class="task-desc">完成场景表达与复盘</p>
+            </div>
+            <div>
+              <div class="task-points">+35 分</div>
+              <div class="task-limit">今日 0 / 2</div>
+            </div>
+          </article>
+          <button
+            class="secondary-button"
+            type="button"
+            style="width: 100%"
+            data-show-toast="口语将在首轮 Beta 验证学习—陪伴闭环后开放"
+          >
+            查看口语任务
+          </button>
+        </section>
+
+        <section class="screen" id="screen-care" aria-labelledby="care-title">
+          <h1 class="screen-heading" id="care-title">照料 Momo</h1>
+          <p class="screen-subtitle">
+            基础互动免费；真实时间只用于温和提醒与休养/重逢，不会让 Momo 消失。
+          </p>
+          <article class="card">
+            <div class="row">
+              <div>
+                <strong>当前状态</strong>
+                <p class="muted" id="care-summary">Momo 正在等你有空来陪它。</p>
+              </div>
+              <span class="status status-warning" id="care-status">待处理</span>
+            </div>
+          </article>
+          <span class="section-label">现在可以做什么</span>
+          <article class="card care-action">
+            <div>
+              <h3>🍚 一起吃点心</h3>
+              <p id="feed-description">免费基础互动 · 让 Momo 知道你回来了</p>
+            </div>
+            <button class="secondary-button" id="feed-button" type="button">喂食</button>
+          </article>
+          <article class="card care-action">
+            <div>
+              <h3>💧 换一碗水</h3>
+              <p id="water-description">免费基础互动 · 安静陪伴一分钟</p>
+            </div>
+            <button class="secondary-button" id="water-button" type="button">供水</button>
+          </article>
+          <article class="card care-action">
+            <div>
+              <h3>🧹 整理小窝</h3>
+              <p id="litter-description">免费基础互动 · 为下一次相见留一点舒适</p>
+            </div>
+            <button class="secondary-button" id="litter-button" type="button">清理</button>
+          </article>
+          <span class="section-label">状态时间线</span>
+          <div class="timeline" id="timeline" aria-label="Momo 的状态时间线">
+            <div class="timeline-item warning">
+              <strong>有空时回来陪 Momo 吧</strong
+              ><span>即使暂时离开，它也会在休养空间等你；重逢不消耗积分。</span>
+            </div>
+            <div class="timeline-item">
+              <strong>昨天已完成供水</strong><span>服务端记录：08 月 21 日 18:30</span>
+            </div>
+            <div class="timeline-item">
+              <strong>领养 Momo</strong><span>服务端记录：08 月 10 日 09:12</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="screen-shop" aria-labelledby="shop-title">
+          <h1 class="screen-heading" id="shop-title">陪伴空间</h1>
+          <p class="screen-subtitle">
+            验证通过后才开放的可选内容预览；不影响基础学习、照料或重逢。
+          </p>
+          <article class="card">
+            <div class="row">
+              <div>
+                <strong>可用积分</strong>
+                <p class="muted">演示账户余额</p>
+              </div>
+              <strong style="color: var(--learning); font-size: 24px"
+                ><span id="shop-points">68</span> 分</strong
+              >
+            </div>
+          </article>
+          <span class="section-label">可选内容（概念预览）</span>
+          <article class="card shop-card">
+            <div class="shop-icon">🍚</div>
+            <div>
+              <h3>点心小礼</h3>
+              <p>一段额外撒娇反馈。当前已收藏 <span id="shop-food-count">0</span> 次。</p>
+            </div>
+            <div class="shop-buy">
+              <span class="shop-price">12 分</span
+              ><button class="secondary-button" data-buy="food" type="button">概念解锁</button>
+            </div>
+          </article>
+          <article class="card shop-card">
+            <div class="shop-icon">💧</div>
+            <div>
+              <h3>窗边花盆</h3>
+              <p>为陪伴空间添一件小装饰。当前已收藏 <span id="shop-water-count">1</span> 件。</p>
+            </div>
+            <div class="shop-buy">
+              <span class="shop-price">24 分</span
+              ><button class="secondary-button" data-buy="water" type="button">概念解锁</button>
+            </div>
+          </article>
+          <article class="card shop-card">
+            <div class="shop-icon">🧹</div>
+            <div>
+              <h3>玩具小球</h3>
+              <p>解锁一次互动小动作。当前已收藏 <span id="shop-litter-count">0</span> 件。</p>
+            </div>
+            <div class="shop-buy">
+              <span class="shop-price">18 分</span
+              ><button class="secondary-button" data-buy="litter" type="button">概念解锁</button>
+            </div>
+          </article>
+          <article class="card shop-card">
+            <div class="shop-icon">💊</div>
+            <div>
+              <h3>呼噜声音主题</h3>
+              <p>可关闭的陪伴声音主题，不影响宠物状态。</p>
+            </div>
+            <div class="shop-buy">
+              <span class="shop-price">36 分</span
+              ><button class="secondary-button" data-buy="medicine" type="button">概念解锁</button>
+            </div>
+          </article>
+          <p class="muted">正式推出前需通过封闭测试、内容授权与性能评审；原型只呈现交互。</p>
+        </section>
+
+        <section class="screen" id="screen-profile" aria-labelledby="profile-title">
+          <h1 class="screen-heading" id="profile-title">我的</h1>
+          <p class="screen-subtitle">学习、积分与照料都应有可追溯记录。</p>
+          <article class="card">
+            <div class="row">
+              <div>
+                <strong>小林</strong>
+                <p class="muted">连续学习 4 天</p>
+              </div>
+              <span class="status status-safe">已登录</span>
+            </div>
+            <div style="height: 10px"></div>
+            <div class="mini-progress"><span style="width: 57%"></span></div>
+            <p class="muted">本周学习目标：完成 7 个任务（4 / 7）</p>
+          </article>
+          <span class="section-label">领养档案</span>
+          <article class="card">
+            <div class="profile-item">
+              <div><strong>Momo</strong><span>英国短毛猫 · 活跃</span></div>
+              <button
+                class="text-button"
+                data-show-toast="领养档案会显示物种、领养时间、最近互动与共同记忆"
+              >
+                查看
+              </button>
+            </div>
+            <div class="profile-item">
+              <div><strong>首轮 Beta 宠物</strong><span>1 / 1</span></div>
+              <span class="status status-safe">正常</span>
+            </div>
+          </article>
+          <span class="section-label">积分记录</span>
+          <article class="card" id="ledger">
+            <div class="ledger-item">
+              <div><strong>初始演示积分</strong><small>今天 08:00 · 原型数据</small></div>
+              <span class="ledger-positive">+68</span>
+            </div>
+          </article>
+          <span class="section-label">规则与设置</span>
+          <article class="card">
+            <div class="profile-item">
+              <div>
+                <strong>真实时间与可恢复陪伴</strong><span>提醒、休养与重逢方式都会明确提示</span>
+              </div>
+              <button
+                class="text-button"
+                data-show-toast="36h 后温和提醒，72h 后进入休养；随时可用一次免费互动重逢。"
+              >
+                说明
+              </button>
+            </div>
+            <div class="profile-item">
+              <div><strong>提醒偏好</strong><span>上线时可配置，尊重系统权限</span></div>
+              <button class="text-button" data-show-toast="提醒配置将在 M4 实现。">设置</button>
+            </div>
+          </article>
+        </section>
+      </main>
+
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+      <audio id="cat-audio" preload="auto" src="assets/audio/cat-soft-mew.wav"></audio>
+      <audio id="dog-audio" preload="auto" src="assets/audio/dog-bark.ogg"></audio>
+
+      <nav class="bottom-nav" aria-label="主导航">
+        <button class="nav-button is-active" type="button" data-navigate="home">
+          <span class="nav-icon" aria-hidden="true">⌂</span>今日
+        </button>
+        <button class="nav-button" type="button" data-navigate="learn">
+          <span class="nav-icon" aria-hidden="true">✎</span>学习
+        </button>
+        <button class="nav-button" type="button" data-navigate="care">
+          <span class="nav-icon" aria-hidden="true">♡</span>照料
+        </button>
+        <button class="nav-button" type="button" data-navigate="shop">
+          <span class="nav-icon" aria-hidden="true">▱</span>空间
+        </button>
+        <button class="nav-button" type="button" data-navigate="profile">
+          <span class="nav-icon" aria-hidden="true">◌</span>我的
+        </button>
+      </nav>
+    </div>
+
+    <div
+      class="modal-backdrop"
+      id="learning-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+    >
+      <div class="modal">
+        <p class="eyebrow">背单词 · 演示第 1 题</p>
+        <h2 id="modal-title">选择 “care” 的正确含义</h2>
+        <div class="word" aria-label="英文单词 care">care</div>
+        <div class="answer-grid">
+          <button class="answer-button" type="button" data-answer>照料</button
+          ><button class="answer-button" type="button" data-answer>比较</button
+          ><button class="answer-button" type="button" data-answer>离开</button
+          ><button class="answer-button" type="button" data-answer>房间</button>
+        </div>
+        <div class="modal-footer">
+          <button class="text-button" type="button" data-close-learning>稍后再做</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const state = {
+        points: 68,
+        food: 0,
+        water: 1,
+        litter: 0,
+        medicine: 0,
+        wordsCompleted: 0,
+        fed: false,
+        watered: false,
+        litterCleaned: false,
+        speciesPreview: 'cat',
+        soundEnabled: true,
+      }
+      const names = {
+        food: '点心小礼',
+        water: '窗边花盆',
+        litter: '玩具小球',
+        medicine: '呼噜声音主题',
+      }
+      const prices = { food: 12, water: 24, litter: 18, medicine: 36 }
+      let toastTimer
+      let ambientTimer
+      let autoplayBlocked = false
+
+      function byId(id) {
+        return document.getElementById(id)
+      }
+      function showToast(message) {
+        const toast = byId('toast')
+        toast.textContent = message
+        toast.classList.add('is-showing')
+        clearTimeout(toastTimer)
+        toastTimer = setTimeout(() => toast.classList.remove('is-showing'), 2600)
+      }
+      function addLedger(title, amount, type) {
+        const row = document.createElement('div')
+        row.className = 'ledger-item'
+        row.innerHTML = `<div><strong>${title}</strong><small>刚刚 · 原型演示</small></div><span class="ledger-${type}">${amount > 0 ? '+' : ''}${amount}</span>`
+        byId('ledger').prepend(row)
+      }
+      function addTimeline(title, detail, warning = false) {
+        const item = document.createElement('div')
+        item.className = `timeline-item${warning ? ' warning' : ''}`
+        item.innerHTML = `<strong>${title}</strong><span>${detail}</span>`
+        byId('timeline').prepend(item)
+      }
+      function setSpeciesPreview(species) {
+        state.speciesPreview = species
+        byId('pet-stage').dataset.species = species
+        document.querySelectorAll('[data-select-species]').forEach((button) => {
+          const selected = button.dataset.selectSpecies === species
+          button.classList.toggle('is-selected', selected)
+          button.setAttribute('aria-pressed', String(selected))
+        })
+        const scene = byId('pet-scene')
+        scene.src = species === 'cat' ? 'assets/momo-cat-room.jpg' : 'assets/dodo-dog-room.jpg'
+        scene.alt =
+          species === 'cat'
+            ? '英国短毛猫 Momo 在洒满阳光的房间里安静休息'
+            : '金毛犬 Dodo 在洒满阳光的房间里安静休息'
+        byId('pet-presence').textContent =
+          species === 'cat' ? 'Momo 正在安静陪伴' : 'Dodo 正在安静陪伴'
+        byId('pet-speech').textContent =
+          species === 'cat'
+            ? 'Momo 在窗边晒太阳，偶尔抬头看看你。'
+            : 'Dodo 听见你的脚步，慢慢摇起尾巴。'
+        scheduleAmbientSound(9000)
+      }
+      function stopPetSound() {
+        ;['cat-audio', 'dog-audio'].forEach((id) => {
+          const audio = byId(id)
+          audio.pause()
+          audio.currentTime = 0
+        })
+      }
+      function playPetSound() {
+        if (!state.soundEnabled || document.hidden) return
+        const audio = byId(state.speciesPreview === 'cat' ? 'cat-audio' : 'dog-audio')
+        const otherAudio = byId(state.speciesPreview === 'cat' ? 'dog-audio' : 'cat-audio')
+        otherAudio.pause()
+        audio.currentTime = 0
+        audio.volume = 0.22
+        const playAttempt = audio.play()
+        if (playAttempt && typeof playAttempt.catch === 'function') {
+          playAttempt.catch(() => {
+            autoplayBlocked = true
+            byId('sound-status').textContent = '浏览器将在首次轻触后播放陪伴声'
+          })
+        }
+      }
+      function nextAmbientDelay() {
+        return 45000 + Math.floor(Math.random() * 60000)
+      }
+      function scheduleAmbientSound(delay = nextAmbientDelay()) {
+        window.clearTimeout(ambientTimer)
+        if (!state.soundEnabled || document.hidden) return
+        ambientTimer = window.setTimeout(() => {
+          const message =
+            state.speciesPreview === 'cat'
+              ? 'Momo 轻轻叫了一声，又安心地蜷回阳光里。'
+              : 'Dodo 轻轻哼了一声，继续守在你身边。'
+          reactPet(message)
+          playPetSound()
+          scheduleAmbientSound()
+        }, delay)
+      }
+      function reactPet(message) {
+        const stage = byId('pet-stage')
+        byId('pet-speech').textContent = message
+        stage.classList.remove('is-reacting')
+        void stage.offsetWidth
+        stage.classList.add('is-reacting')
+        window.setTimeout(() => stage.classList.remove('is-reacting'), 1200)
+      }
+      function updateStatus() {
+        byId('points-value').textContent = state.points
+        byId('shop-points').textContent = state.points
+        byId('shop-food-count').textContent = state.food
+        byId('shop-water-count').textContent = state.water
+        byId('shop-litter-count').textContent = state.litter
+        byId('feed-button').disabled = state.fed
+        byId('water-button').disabled = state.watered
+        byId('litter-button').disabled = state.litterCleaned
+        byId('feed-description').textContent = state.fed
+          ? '已完成 · Momo 记住了这次相见'
+          : '免费基础互动 · 让 Momo 知道你回来了'
+        byId('water-description').textContent = state.watered
+          ? '已完成 · Momo 在窗边安静陪着你'
+          : '免费基础互动 · 安静陪伴一分钟'
+        byId('litter-description').textContent = state.litterCleaned
+          ? '已完成 · 小窝已经整理好'
+          : '免费基础互动 · 为下一次相见留一点舒适'
+        const stable = state.fed || state.watered || state.litterCleaned
+        byId('home-status').className = `status ${stable ? 'status-safe' : 'status-warning'}`
+        byId('home-status').textContent = stable ? '正在陪伴' : '轻轻提醒'
+        byId('care-status').className = `status ${stable ? 'status-safe' : 'status-warning'}`
+        byId('care-status').textContent = stable ? '已陪伴' : '等你回来'
+        byId('care-summary').textContent = stable
+          ? '这次相见已被记下，Momo 会继续安静陪你。'
+          : '有空时回来互动；离开不会让 Momo 消失。'
+        byId('home-food-time').textContent = state.fed ? '已完成' : '有空陪陪它'
+        byId('home-water-time').textContent = state.watered ? '已完成' : '随时可以'
+        byId('home-litter-time').textContent = state.litterCleaned ? '已完成' : '随时可以'
+        byId('words-limit').textContent = `今日 ${state.wordsCompleted} / 3`
+        byId('today-earned').textContent = `已得 ${state.wordsCompleted * 8} / 24 分`
+        byId('learning-progress').style.width = `${Math.min(state.wordsCompleted * 10, 100)}%`
+      }
+      function navigate(target) {
+        document
+          .querySelectorAll('.screen')
+          .forEach((screen) =>
+            screen.classList.toggle('is-active', screen.id === `screen-${target}`),
+          )
+        document
+          .querySelectorAll('.nav-button')
+          .forEach((button) =>
+            button.classList.toggle('is-active', button.dataset.navigate === target),
+          )
+        byId('toast').classList.remove('is-showing')
+      }
+      function openLearning() {
+        byId('learning-modal').classList.add('is-open')
+      }
+      function closeLearning() {
+        byId('learning-modal').classList.remove('is-open')
+      }
+      function completeWords() {
+        closeLearning()
+        if (state.wordsCompleted >= 3) {
+          showToast('背单词已达今日上限，明天再继续吧。')
+          return
+        }
+        state.wordsCompleted += 1
+        state.points += 8
+        addLedger('完成背单词（10 词，演示）', 8, 'positive')
+        updateStatus()
+        reactPet(
+          state.speciesPreview === 'cat' ? '“喵！你完成啦，真厉害。”' : '“汪！我为你摇尾巴。”',
+        )
+        showToast('学习已确认：获得 8 分（原型演示）')
+        navigate('home')
+      }
+      function buy(item) {
+        const price = prices[item]
+        if (state.points < price) {
+          showToast('积分不足，先完成学习获得积分。')
+          return
+        }
+        state.points -= price
+        state[item] += 1
+        addLedger(`解锁${names[item]}（概念演示）`, -price, 'negative')
+        updateStatus()
+        reactPet(
+          state.speciesPreview === 'cat'
+            ? '“喵～ 又多了一点喜欢的样子。”'
+            : '“汪！这里更像我们的家了。”',
+        )
+        showToast(`已概念解锁 ${names[item]}（原型演示）`)
+      }
+      function care(item) {
+        if (item === 'food' && !state.fed) {
+          state.fed = true
+          addTimeline('已一起吃点心', '刚刚 · 免费基础互动，Momo 记住你回来了')
+        }
+        if (item === 'water' && !state.watered) {
+          state.watered = true
+          addTimeline('已换一碗水', '刚刚 · 免费基础互动，Momo 安静陪着你')
+        }
+        if (item === 'litter' && !state.litterCleaned) {
+          state.litterCleaned = true
+          addTimeline('已整理小窝', '刚刚 · 免费基础互动，为下次相见留一点舒适')
+        }
+        updateStatus()
+        reactPet(state.speciesPreview === 'cat' ? '“呼噜呼噜，谢谢你。”' : '“汪！我好开心。”')
+        showToast('陪伴已确认（原型演示）')
+      }
+
+      document
+        .querySelectorAll('[data-navigate]')
+        .forEach((button) =>
+          button.addEventListener('click', () => navigate(button.dataset.navigate)),
+        )
+      document
+        .querySelectorAll('[data-open-learning]')
+        .forEach((button) => button.addEventListener('click', openLearning))
+      document
+        .querySelectorAll('[data-close-learning]')
+        .forEach((button) => button.addEventListener('click', closeLearning))
+      document
+        .querySelectorAll('[data-answer]')
+        .forEach((button) => button.addEventListener('click', completeWords))
+      document
+        .querySelectorAll('[data-buy]')
+        .forEach((button) => button.addEventListener('click', () => buy(button.dataset.buy)))
+      document
+        .querySelectorAll('[data-show-toast]')
+        .forEach((button) =>
+          button.addEventListener('click', () => showToast(button.dataset.showToast)),
+        )
+      byId('feed-button').addEventListener('click', () => care('food'))
+      byId('water-button').addEventListener('click', () => care('water'))
+      byId('litter-button').addEventListener('click', () => care('litter'))
+      byId('sound-setting').addEventListener('click', () => {
+        state.soundEnabled = !state.soundEnabled
+        byId('sound-setting').setAttribute('aria-pressed', String(state.soundEnabled))
+        byId('sound-setting').textContent = state.soundEnabled ? '静音' : '开启声音'
+        byId('sound-status').textContent = state.soundEnabled
+          ? '已开启：自然间隔的陪伴叫声'
+          : '陪伴声已静音，Momo 仍会安静陪着你'
+        if (state.soundEnabled) {
+          autoplayBlocked = false
+          scheduleAmbientSound(2500)
+        } else {
+          window.clearTimeout(ambientTimer)
+          stopPetSound()
+        }
+      })
+      document.querySelectorAll('[data-select-species]').forEach((button) => {
+        button.addEventListener('click', () => setSpeciesPreview(button.dataset.selectSpecies))
+      })
+      byId('learning-modal').addEventListener('click', (event) => {
+        if (event.target === byId('learning-modal')) closeLearning()
+      })
+      document.addEventListener(
+        'pointerdown',
+        () => {
+          if (state.soundEnabled && autoplayBlocked) {
+            autoplayBlocked = false
+            byId('sound-status').textContent = '已开启：自然间隔的陪伴叫声'
+            scheduleAmbientSound(1200)
+          }
+        },
+        { once: true },
+      )
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          window.clearTimeout(ambientTimer)
+          stopPetSound()
+        } else {
+          scheduleAmbientSound(7000)
+        }
+      })
+      updateStatus()
+      scheduleAmbientSound(7000)
+    </script>
+  </body>
+</html>
