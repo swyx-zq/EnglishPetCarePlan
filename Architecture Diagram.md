@@ -16,13 +16,13 @@ flowchart LR
     subgraph apiLayer["服务端 API"]
         api["FastAPI\n/api/v1\n当前仅 health"]
         contract["OpenAPI 契约\nPydantic 输入输出校验"]
-        domain["领域服务\n积分、库存、宠物状态、排行榜\nM1/M2 规划中"]
+        domain["领域服务\n学习计划、积分账本、Momo 记忆\nM1/M2 规划中"]
     end
 
     subgraph dataLayer["数据与协调"]
-        postgres[("PostgreSQL\n账本与业务事实\nM1 规划中")]
+        postgres[("PostgreSQL\n词库、学习记录、账本与业务事实\nM1 规划中")]
         redis[("Redis\n限流、缓存、幂等协调\nM1 规划中")]
-        worker["Python Worker\n定时结算、通知、重试\nM2 规划中"]
+        worker["Python Worker\n延迟复习、可选通知、重试\nM1 规划中"]
     end
 
     mini -->|"本地构建"| devtools
@@ -32,17 +32,17 @@ flowchart LR
     contract -.->|"M1/M2：授权后调用"| domain
     domain -.->|"M1：事务读写"| postgres
     domain -.->|"M1：限流与幂等协调"| redis
-    worker -.->|"M2：结算与审计读写"| postgres
-    worker -.->|"M2：任务协调"| redis
+    worker -.->|"M1：复习与审计读写"| postgres
+    worker -.->|"M1：任务协调"| redis
 ```
 
 ### 当前实现状态
 
-| 区域 | 当前状态 | 责任边界 |
-| --- | --- | --- |
-| 微信小程序 / H5 | 已有 Taro React 页面、构建、UnitTest 和 H5 UITest 骨架 | 只负责展示、输入与请求状态；不能裁决积分、库存或宠物状态。 |
-| FastAPI | 已有应用工厂、`/api/v1/health`、配置模型和 OpenAPI 入口 | 后续是所有业务规则的唯一权威。 |
-| PostgreSQL / Redis / Worker | 尚未接入 | 仅为 M1/M2 目标架构，当前没有可连接的业务数据源。 |
+| 区域                        | 当前状态                                                | 责任边界                                                   |
+| --------------------------- | ------------------------------------------------------- | ---------------------------------------------------------- |
+| 微信小程序 / H5             | 已有 Taro React 页面、构建、UnitTest 和 H5 UITest 骨架  | 只负责展示、输入与请求状态；不能裁决积分、库存或宠物状态。 |
+| FastAPI                     | 已有应用工厂、`/api/v1/health`、配置模型和 OpenAPI 入口 | 后续是所有业务规则的唯一权威。                             |
+| PostgreSQL / Redis / Worker | 尚未接入                                                | 仅为 M1/M2 目标架构，当前没有可连接的业务数据源。          |
 
 ## 2. 业务请求与安全边界
 
@@ -54,7 +54,7 @@ sequenceDiagram
     participant domain as "领域服务"
     participant store as "PostgreSQL 账本"
 
-    Note over client,store: "以下积分、库存和照料请求流程为 M1/M2 目标，当前尚未实现"
+    Note over client,store: "以下学习计划、积分和记忆请求流程为 M1/M2 目标，当前尚未实现"
     client->>api: "HTTPS 请求与幂等键"
     api->>schema: "验证会话、资源归属和输入"
     schema->>domain: "传递已验证命令"
@@ -64,7 +64,7 @@ sequenceDiagram
     api-->>client: "可展示的结果或错误码"
 ```
 
-安全规则：客户端不得本地结算积分、库存、健康、疾病、死亡或排行榜。所有写入在服务端完成身份验证、资源归属校验、状态转换校验和幂等控制后，才可进入账本或状态存储。
+安全规则：客户端不得本地结算积分、学习计划、复习、记忆、健康、疾病、死亡或排行榜。所有写入在服务端完成身份验证、资源归属校验、内容/状态校验和幂等控制后，才可进入账本或状态存储。
 
 ## 3. 开发与质量门禁
 
@@ -84,4 +84,4 @@ flowchart LR
 
 ## 4. 后续更新规则
 
-当 M1 接入登录、学习任务与积分账本时，应将虚线请求链路改为实线，并补充实际的认证方式、数据库迁移和错误码。当 M2 接入照料定时结算时，再将 Worker 与 Redis 链路标记为已实现。详细架构说明见 [docs/architecture.md](docs/architecture.md)。
+当 M1 接入登录、词库、学习任务与积分账本时，应将虚线请求链路改为实线，并补充实际的认证方式、数据库迁移和错误码。当延迟复习调度接入后，再将 Worker 与 Redis 链路标记为已实现。详细架构说明见 [docs/architecture.md](docs/architecture.md)。
